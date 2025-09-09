@@ -33,3 +33,10 @@ func Unauthorized(ctx *gin.Context, err error) {
 		"status":  0,
 	})
 }
+
+func UnprocessableEntity(ctx *gin.Context, err error) {
+	ctx.JSON(http.StatusUnprocessableEntity, gin.H{
+		"message": err.Error(),
+		"status":  0,
+	})
+}

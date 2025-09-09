@@ -23,17 +23,17 @@ func (user User) save() (*User, error) {
 	return &user, nil
 }
 
-func checkCredentials(email string, password string) error {
-	query := `SELECT password FROM users WHERE email = ? AND is_deleted = false`
-	row := database.DB.QueryRow(query, email)
+func (user *User) checkCredentials() error {
+	query := `SELECT user_id, password FROM users WHERE email = ? AND is_deleted = false`
+	row := database.DB.QueryRow(query, user.Email)
 
 	var dbPassword string
-	err := row.Scan(&dbPassword)
+	err := row.Scan(&user.UserID, &dbPassword)
 	if err != nil {
 		return errors.New("Unauthorized user")
 	}
 
-	if !utils.VerifyPassword(password, dbPassword) {
+	if !utils.VerifyPassword(user.Password, dbPassword) {
 		return errors.New("Credentials invalid")
 	}
 

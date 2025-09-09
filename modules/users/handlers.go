@@ -38,14 +38,14 @@ func loginUser(ctx *gin.Context) {
 		return
 	}
 
-	if err := checkCredentials(user.Email, user.Password); err != nil {
+	if err := user.checkCredentials(); err != nil {
 		errors.Unauthorized(ctx, err)
 		return
 	}
 
 	token, err := utils.GenerateToken(user.UserID, user.Email)
 	if err != nil {
-		errors.SomethingWentWrong(ctx, err)
+		errors.UnprocessableEntity(ctx, err)
 		return
 	}
 
