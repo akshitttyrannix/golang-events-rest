@@ -6,6 +6,7 @@ import (
 	"example.com/events/common/errors"
 	"example.com/events/common/messages"
 	"example.com/events/common/success"
+	"example.com/events/common/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -42,5 +43,11 @@ func loginUser(ctx *gin.Context) {
 		return
 	}
 
-	success.Success(ctx, messages.USER_LOGGED_IN, nil)
+	token, err := utils.GenerateToken(user.UserID, user.Email)
+	if err != nil {
+		errors.SomethingWentWrong(ctx, err)
+		return
+	}
+
+	success.Success(ctx, messages.USER_LOGGED_IN, token)
 }
