@@ -1,6 +1,7 @@
 package events
 
 import (
+	"errors"
 	"time"
 
 	"example.com/events/common/error"
@@ -63,6 +64,11 @@ func updateEvent(ctx *gin.Context) {
 		return
 	}
 
+	if event.UserID != ctx.GetString("user_id") {
+		error.Abort(ctx, errors.New("Unauthorized"))
+		return
+	}
+
 	if err := ctx.ShouldBindJSON(&event); err != nil {
 		error.BadRequest(ctx, err)
 		return
@@ -85,6 +91,11 @@ func deleteEvent(ctx *gin.Context) {
 	event, err := findByID(id)
 	if err != nil {
 		error.NotFound(ctx, err)
+		return
+	}
+
+	if event.UserID != ctx.GetString("user_id") {
+		error.Abort(ctx, errors.New("Unauthorized"))
 		return
 	}
 
