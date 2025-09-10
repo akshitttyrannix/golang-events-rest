@@ -40,3 +40,10 @@ func UnprocessableEntity(ctx *gin.Context, err error) {
 		"status":  0,
 	})
 }
+
+func Abort(ctx *gin.Context, err error) {
+	ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		"message": err.Error(),
+		"status":  0,
+	})
+}

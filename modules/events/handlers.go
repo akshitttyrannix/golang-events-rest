@@ -1,37 +1,23 @@
 package events
 
 import (
-	"errors"
 	"time"
 
 	"example.com/events/common/error"
 	"example.com/events/common/messages"
 	"example.com/events/common/success"
-	"example.com/events/common/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 func createEvent(ctx *gin.Context) {
-	token := ctx.GetHeader("Authorization")
-	if token == "" {
-		error.Unauthorized(ctx, errors.New("Unauthorized"))
-		return
-	}
-
-	_, userID, err := utils.VerifyToken(token)
-	if err != nil {
-		error.Unauthorized(ctx, err)
-		return
-	}
-
 	var event Event
 	if err := ctx.ShouldBindJSON(&event); err != nil {
 		error.BadRequest(ctx, err)
 		return
 	}
 
-	event.UserID = userID
+	event.UserID = ctx.GetString("user_id")
 	event.EventID = uuid.New().String()
 	event.CreatedAt = time.Now().Unix()
 	event.UpdatedAt = time.Now().Unix()

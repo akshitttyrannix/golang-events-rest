@@ -1,8 +1,13 @@
 package events
 
-import "github.com/gin-gonic/gin"
+import (
+	"example.com/events/middlewares"
+	"github.com/gin-gonic/gin"
+)
 
 func Routes(router *gin.RouterGroup) {
+	router.Use(middlewares.AuthMiddleware)
+
 	router.GET("/events", getEvents)
 	router.GET("/events/:id", getEventByID)
 	router.POST("/events", createEvent)
