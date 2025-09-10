@@ -31,11 +31,7 @@ func createEvent(ctx *gin.Context) {
 		return
 	}
 
-	if event.UserID != userID {
-		error.Unauthorized(ctx, errors.New("Unauthorized"))
-		return
-	}
-
+	event.UserID = userID
 	event.EventID = uuid.New().String()
 	event.CreatedAt = time.Now().Unix()
 	event.UpdatedAt = time.Now().Unix()

@@ -12,5 +12,5 @@ type Event struct {
 	UpdatedAt int64  `json:"updated_at"`
 	IsDeleted bool   `json:"is_deleted"`
 
-	UserID string `json:"user_id" binding:"required"`
+	UserID string `json:"user_id"`
 }
