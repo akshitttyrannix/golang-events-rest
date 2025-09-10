@@ -3,7 +3,7 @@ package users
 import (
 	"time"
 
-	"example.com/events/common/errors"
+	"example.com/events/common/error"
 	"example.com/events/common/messages"
 	"example.com/events/common/success"
 	"example.com/events/common/utils"
@@ -14,7 +14,7 @@ import (
 func signUpUser(ctx *gin.Context) {
 	var user User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		errors.BadRequest(ctx, err)
+		error.BadRequest(ctx, err)
 		return
 	}
 
@@ -24,7 +24,7 @@ func signUpUser(ctx *gin.Context) {
 
 	createdUser, err := user.save()
 	if err != nil {
-		errors.SomethingWentWrong(ctx, err)
+		error.SomethingWentWrong(ctx, err)
 		return
 	}
 
@@ -34,18 +34,18 @@ func signUpUser(ctx *gin.Context) {
 func loginUser(ctx *gin.Context) {
 	var user User
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		errors.BadRequest(ctx, err)
+		error.BadRequest(ctx, err)
 		return
 	}
 
 	if err := user.checkCredentials(); err != nil {
-		errors.Unauthorized(ctx, err)
+		error.Unauthorized(ctx, err)
 		return
 	}
 
 	token, err := utils.GenerateToken(user.UserID, user.Email)
 	if err != nil {
-		errors.UnprocessableEntity(ctx, err)
+		error.UnprocessableEntity(ctx, err)
 		return
 	}
 

@@ -1,9 +1,10 @@
 package events
 
 import (
+	"errors"
 	"time"
 
-	"example.com/events/common/errors"
+	"example.com/events/common/error"
 	"example.com/events/common/messages"
 	"example.com/events/common/success"
 	"github.com/gin-gonic/gin"
@@ -11,9 +12,15 @@ import (
 )
 
 func createEvent(ctx *gin.Context) {
+	token := ctx.GetHeader("Authorization")
+	if token == "" {
+		error.Unauthorized(ctx, errors.New("Unauthorized"))
+		return
+	}
+
 	var event Event
 	if err := ctx.ShouldBindJSON(&event); err != nil {
-		errors.BadRequest(ctx, err)
+		error.BadRequest(ctx, err)
 		return
 	}
 
@@ -24,7 +31,7 @@ func createEvent(ctx *gin.Context) {
 	createdEvent, err := event.save()
 
 	if err != nil {
-		errors.SomethingWentWrong(ctx, err)
+		error.SomethingWentWrong(ctx, err)
 		return
 	}
 
@@ -34,7 +41,7 @@ func createEvent(ctx *gin.Context) {
 func getEvents(ctx *gin.Context) {
 	allEvents, err := find()
 	if err != nil {
-		errors.SomethingWentWrong(ctx, err)
+		error.SomethingWentWrong(ctx, err)
 		return
 	}
 
@@ -46,7 +53,7 @@ func getEventByID(ctx *gin.Context) {
 
 	event, err := findByID(id)
 	if err != nil {
-		errors.NotFound(ctx, err)
+		error.NotFound(ctx, err)
 		return
 	}
 
@@ -58,12 +65,12 @@ func updateEvent(ctx *gin.Context) {
 
 	event, err := findByID(id)
 	if err != nil {
-		errors.NotFound(ctx, err)
+		error.NotFound(ctx, err)
 		return
 	}
 
 	if err := ctx.ShouldBindJSON(&event); err != nil {
-		errors.BadRequest(ctx, err)
+		error.BadRequest(ctx, err)
 		return
 	}
 
@@ -71,7 +78,7 @@ func updateEvent(ctx *gin.Context) {
 
 	updatedEvent, err := updateOne(event)
 	if err != nil {
-		errors.SomethingWentWrong(ctx, err)
+		error.SomethingWentWrong(ctx, err)
 		return
 	}
 
@@ -83,13 +90,13 @@ func deleteEvent(ctx *gin.Context) {
 
 	event, err := findByID(id)
 	if err != nil {
-		errors.NotFound(ctx, err)
+		error.NotFound(ctx, err)
 		return
 	}
 
 	err = deleteOne(id)
 	if err != nil {
-		errors.SomethingWentWrong(ctx, err)
+		error.SomethingWentWrong(ctx, err)
 		return
 	}
 
