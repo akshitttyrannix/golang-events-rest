@@ -7,6 +7,7 @@ import (
 	"example.com/events/common/error"
 	"example.com/events/common/messages"
 	"example.com/events/common/success"
+	"example.com/events/common/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -18,9 +19,25 @@ func createEvent(ctx *gin.Context) {
 		return
 	}
 
+	email, userID, err := utils.VerifyToken(token)
+	if err != nil {
+		error.Unauthorized(ctx, err)
+		return
+	}
+
+	if email == "" || userID == "" {
+		error.Unauthorized(ctx, errors.New("Unauthorized"))
+		return
+	}
+
 	var event Event
 	if err := ctx.ShouldBindJSON(&event); err != nil {
 		error.BadRequest(ctx, err)
+		return
+	}
+
+	if event.UserID != userID {
+		error.Unauthorized(ctx, errors.New("Unauthorized"))
 		return
 	}
 
