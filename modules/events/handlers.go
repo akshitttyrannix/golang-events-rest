@@ -19,14 +19,9 @@ func createEvent(ctx *gin.Context) {
 		return
 	}
 
-	email, userID, err := utils.VerifyToken(token)
+	_, userID, err := utils.VerifyToken(token)
 	if err != nil {
 		error.Unauthorized(ctx, err)
-		return
-	}
-
-	if email == "" || userID == "" {
-		error.Unauthorized(ctx, errors.New("Unauthorized"))
 		return
 	}
 
